@@ -52,6 +52,8 @@ To deploy to GitHub Pages:
 mkdocs gh-deploy
 ```
 
+After deployment, go to the repository settings on GitHub, navigate to the "Pages" section, and ensure that the source is set to the `gh-pages` branch and the folder is set to `/ (root)`.
+
 ## Notes
 
 The Origo documentation is built using [MkDocs](https://www.mkdocs.org/) and the [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/) theme.
