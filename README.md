@@ -1,6 +1,6 @@
 # Documentation for Origo
 
-[Documentation](https://origo-map.github.io/origo-documentation/latest/) for the [Origo](https://github.com/origo-map/origo) web map framework.
+[Documentation](https://kartenheten-mk.github.io/origo-documentation-mkdocs-test/) for the [Origo](https://github.com/origo-map/origo) web map framework.
 
 ## Writing documentation
 
@@ -16,7 +16,7 @@ To run the site locally:
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/origo-map/origo-documentation.git
+   git clone https://github.com/kartenheten-mk/origo-documentation-mkdocs-test.git
    ```
 
 2. Create and activate a virtual environment (optional but recommended):
