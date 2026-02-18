@@ -1,0 +1,410 @@
+# Origo API
+
+## Using Origo API
+
+Origo API is a mix of using exposed methods in Origo and objects from OpenLayers.
+
+For more information on all the options with OpenLayers see [OpenLayers API documentation](https://openlayers.org/en/latest/apidoc/)
+
+The examples below should most of them be runnable on Origo demo map that is distributed from the Github repository, but some uses controls or layers that isn't specified in configuration.
+
+#### Example code
+
+```javascript
+// The base for calling the Origo API
+origo.api();
+
+// Accessing the OpenLayers API
+Origo.ol;
+```
+
+### Change visibility of layer
+
+To change the visibility of a layer first get the layer and then apply setVisible method with true/false as parameter.
+
+#### Example code for making a layer visible
+
+```javascript
+origo.api().getLayer("origo-cities").setVisible(true);
+origo.api().getLayer("origo-cities").setVisible(false);
+```
+
+### Change Zoom
+
+Set the zoom level by enter an integer. The number of zoom level is depending on the configuration and setting a higher number than max zoom will only result in max zoom.
+
+#### Example code for changing zoom
+
+```javascript
+origo.api().getMap().getView().setZoom(8);
+```
+
+### Move the map
+
+To move the map give the coordinates of the center in the map. If the coordinates is in another projection a function to convert the coordinates to the maps projection can be called.
+
+#### Example code for moving the map
+
+```javascript
+// Set center with the native projection (in this example EPSG:3857) of the map
+origo.api().getMap().getView().setCenter([1985429, 8315145]);
+
+// Set center with transformation of the coordinates from WGS84 to Sweref 99 TM
+origo
+  .api()
+  .getMap()
+  .getView()
+  .setCenter(origo.api().getMapUtils().transformCoordinate([13.5, 59.38], "EPSG:4326", "EPSG:3006"));
+```
+
+### Change visibilty of controls
+
+To hide or show a control search the control by name and then apply the hide and unhide method on the control.
+
+#### Example code for hide or show a control
+
+```javascript
+// Hide the legend control
+origo.api().getControlByName("legend").hide();
+
+// Show the legend control
+origo.api().getControlByName("legend").unhide();
+```
+
+### Get features
+
+To get all features from a layer and get all id and names for the features.
+
+#### Example code for getting features and write out their id and names
+
+```javascript
+const allFeatures = origo.api().getLayer("origo-cities").getSource().getFeatures();
+let out = "";
+allFeatures.forEach((feature) => {
+  out += `Id: ${feature.getId()} Namn: ${feature.get("name")} \n`;
+});
+window.alert(out);
+```
+
+### Zoom to a feature
+
+To zoom to a specific feature from a layer.
+
+#### Example code for zooming to a feature
+
+```javascript
+origo.api().zoomToExtent(origo.api().getLayer("origo-cities").getSource().getFeatureById("1").getGeometry());
+```
+
+### Show feature info
+
+To show the feature info of a feature from a layer.
+
+#### Example code for showing feature info
+
+```javascript
+origo
+  .api()
+  .getFeatureinfo()
+  .showFeatureInfo({
+    feature: origo.api().getLayer("origo-cities").getSource().getFeatureById("2"),
+    layerName: "origo-cities",
+  });
+```
+
+### Place a marker on map
+
+A marker can be placed with coordinates to location and also set a title and text for a popup.
+
+#### Example code for adding a marker with popup on map
+
+```javascript
+// Give coordinates, title for popup and text for popup (HTML allowed)
+origo
+  .api()
+  .addMarker([1926764, 8953470], "Get here!", "<b>Sundsvalls kommun</b><br/>Norrmalmsgatan 4<br/>851 85 Sundsvall");
+```
+
+### Limit features for layer
+
+A filter can be applied to a layer to only show a selection of the features in the layer.
+
+#### Example code for setting a filter on a layer
+
+```javascript
+// Get the layer and then set a filter for it
+origo.api().getLayer("Invasive_species").getSource().setFilter("[OrganismGroup] == 'Mamals'");
+```
+
+### Get a link for the map
+
+To get a link of the map with applied layers and settings
+
+#### Example code for creating a sharemap link to the map
+
+```javascript
+// Get the sharemap control and produce a URL and display it in a alert dialog.
+origo
+  .api()
+  .getControlByName("sharemap")
+  .getPermalink()
+  .then((data) => alert(data));
+```
+
+### Get drawn features
+
+To access the features drawn in the drawplugin lookup the layer called drawplugin and get the features from that layers source.
+
+#### Example code for getting drawn features
+
+```javascript
+// Get all layers
+const allLayers = origo.api().getMap().getAllLayers();
+
+// Find the layer for draw control and get the source of that layer to get the features.
+allLayers.forEach((layer) => {
+  if (layer.values_.title === "Ritlager") {
+    const drawSource = layer.getSource();
+    const drawnFeatures = drawSource.getFeatures();
+    console.log(drawnFeatures);
+  }
+});
+```
+
+### Add new tile layer
+
+To add a new tile layer a source must be given and also a title and name.
+
+#### Example code for adding new layer to map
+
+```javascript
+// Add a StadiaMaps tile layer (requires OpenLayers to be version 8 or higher)
+origo
+  .api()
+  .getMap()
+  .addLayer(
+    new Origo.ol.layer.Tile({
+      source: new Origo.ol.source.StadiaMaps({ layer: "stamen_watercolor" }),
+      title: "Stamen",
+      name: "stamen",
+    })
+  );
+```
+
+### Add new vector layer
+
+To add a new vector layer from GeoJSON object.
+
+#### Example code for adding new vector layer to map
+
+```javascript
+// Define a GeoJSON object with a point at Stora Torget in Karlstad as coordinates
+var geojsonObject = {
+  type: "FeatureCollection",
+  crs: {
+    type: "name",
+    properties: {
+      name: "EPSG:3857",
+    },
+  },
+  features: [
+    {
+      type: "Feature",
+      geometry: {
+        type: "Point",
+        coordinates: [1503198, 8263188],
+      },
+      properties: {
+        typ: "En ny punkt!",
+      },
+    },
+  ],
+};
+
+// Create a vector source from the GeoJSON object
+var vectorSource = new Origo.ol.source.Vector({ features: new Origo.ol.format.GeoJSON().readFeatures(geojsonObject) });
+// Create a vector layer
+var vectorLayer = new Origo.ol.layer.Vector({
+  source: vectorSource,
+  name: "Vektorlager",
+  title: "Vektorlager",
+  queryable: true,
+});
+// Add the layer to the map
+origo.api().getMap().addLayer(vectorLayer);
+
+// Center the map to where geometry was added to the map
+origo.api().getMap().getView().setCenter([1503198, 8263188]);
+
+// Create a circle geometry with the radius 300 m
+vectorSource.addFeature(new Origo.ol.Feature(new Origo.ol.geom.Circle([1503198, 8263188], 300)));
+
+// Clear all features from the vector layer
+origo.api().getLayer("Vektorlager").getSource().clear();
+
+// Add the feature from
+origo.api().getLayer("Vektorlager").getSource().addFeatures(new Origo.ol.format.GeoJSON().readFeatures(geojsonObject));
+```
+
+### Add export to click event
+
+To do a export on a click event.
+
+#### Example code for adding a click event export method.
+
+```javascript
+// Adds on a click event a method that checks wheter a point feature is clicked on and then makes a GPX export.
+origo
+  .api()
+  .getMap()
+  .on("click", function (e) {
+    this.forEachFeatureAtPixel(e.pixel, function (feature, layer) {
+      if (feature.getGeometry().getType() == "Point") {
+        alert(
+          new Origo.ol.format.GPX().writeFeatures([feature], {
+            dataProjection: "EPSG:4326",
+            featureProjection: "EPSG:3857",
+          })
+        );
+      }
+    });
+  });
+```
+
+### Add fetch from API to event
+
+To do a fetch on a moveend event.
+
+#### Example code for adding a moveend event fetch method.
+
+```javascript
+// Adds on a moveend event a method that fetches height information on center coordinates.
+origo
+  .api()
+  .getMap()
+  .on("moveend", function (e) {
+    var center = origo.api().getMap().getView().getCenter();
+    fetch("https://karta.sundsvall.se/origoserver/lm/elevation/3857/" + center[0] + "/" + center[1])
+      .then((response) => response.json())
+      .then((data) => {
+        alert("+" + data.geometry.coordinates[2] + " meter");
+      });
+  });
+```
+
+### Refresh data on a layer
+If data for a layer changes constantly as for example when fetching temperatures from IoT sensors it can be useful to let the data be refreshed on a regular interval.
+
+#### Example code for refreshing the data for a layer (in this example called 'temperature') on a regular interval.
+
+```json
+// Refresh temperature data every 10 minutes
+setInterval(() => {
+  if (origo.api().getLayer('temperature').getVisible()) {
+    origo.api().getLayer('temperature').getSource().refresh();
+  }
+}, 600000);
+```
+
+
+### Add locales
+
+This might be useful to perform at startup of a map instance in order to add or change translations without altering Origo's source files.
+
+If the id already exists its definition will be overwritten (for the current browser and user, the new definition is saved in local storage). The form must match the current language file form, see definitions in the `loc` folder. Technically it doesn't need to be complete though then the missing translations will be looked up in the `fallbackLocaleId` locale if configured.
+
+The locale language selector, if active in the map menu, will update.
+
+#### Example code showing the definition of the method
+```javascript
+  /**
+ * Adds an array of locales to the locales object and stores them in localStorage.
+ *
+ * @param {Array} locs - An array of locale objects to be added. Defaults to an empty array if not provided.
+ * If a locale id matches a current locale then the current locale will be overwritten.
+ * @return {boolean} True if locales were added, false otherwise.
+ */
+```
+
+#### Example code showing the usage of the method
+```javascript
+origo.api().getControlByName('localization').addLocales([
+  {
+    "id": "en-US",
+    "title": "English",
+    "menuTitle": "Language",
+    "controls": {
+        "measure": {
+            "layerTitle": "Measure result",
+            "mainButtonTooltip": "Measure",
+            "startMeasureTooltip": "Click to start measuring",
+            "lengthTooltip": "Length",
+            "areaTooltip": "Area",
+            "clearTooltip": "Clear",...
+
+        }
+    }
+  }
+])
+```
+
+### Localize a plugin
+
+the `addPluginToLocale` method is intended as a method for localized plugins to add their translations to the localization control and utilize it to perform their translations. The plugins keep their own language files, one per language, for instance the Barebone plugin might come with a loc/sv_SE.json file.
+
+#### Example code showing a plugin language definition
+```json
+{
+  "barebone": {
+    "mainButtonTooltipText": "Starta maskinen"
+  }
+}
+
+```
+At init the plugins then needs the viewer object.
+
+#### Example code showning how to init the plugin
+```javascript
+origo.on('load', function(viewer) {
+  const barebone = Barebone({
+    buttonText: 'Click this!',
+    content: 'Great stuff',
+    viewer
+ });
+```
+
+After importing their language file(s) they can receive the viewer object and via it access the `localization` control to add their translations to it.
+
+#### Example code showing how to import language files, receive viewer, acquire localization control and add translations to it
+```javascript
+import svLocale from './loc/sv_SE.json';
+
+const Barebone = function Barebone(options = {}) {
+  const {
+    buttonText = 'Default text',
+    content = 'Default content',
+    viewer
+  } = options;
+
+  const localization = viewer.getControlByName('localization');
+  localization.addPluginToLocale('sv-SE', svLocale);
+```
+
+After which it can use said control's `getStringByKeys` method to perform translations.
+
+#### Example code showing how to perform localization
+```javascript
+tooltipText: localization.getStringByKeys({ targetParentKey: 'barebone', targetKey: 'tooltipText' }),
+```
+(numbers can be formatted with a hint of what the currently chosen locale is available via the `getCurrentLocaleId()` method)
+
+#### Example code showing the definition of the method
+```javascript
+  /**
+ * Adds an array of locales to the locales object and stores them in localStorage.
+ *
+ * @param {Array} locs - An array of locale objects to be added. Defaults to an empty array if not provided.
+ * If a locale id matches a current locale then the current locale will be overwritten.
+ * @return {boolean} True if locales were added, false otherwise.
+ */
+```

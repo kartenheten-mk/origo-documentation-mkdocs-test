@@ -1,0 +1,110 @@
+site_name: "Origo Documentation"
+repo_url: https://github.com/origo-map/origo
+repo_name: "origo-map/origo"
+edit_uri: ""
+
+theme:
+  name: material
+  logo: assets/logga_origo.png
+  favicon: assets/logga_origo.png
+  palette:
+    - primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      primary: custom
+      accent: custom
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+  features:
+    - navigation.sections
+    - navigation.expand
+    - navigation.indexes
+    - toc.follow
+    - content.code.copy
+    - search.highlight
+    - search.suggest
+
+extra_css:
+  - assets/extra.css
+
+markdown_extensions:
+  - admonition
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.details
+  - toc:
+      permalink: true
+  - tables
+  - attr_list
+  - md_in_html
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Creating the Map: getting-started/creating-the-map.md
+    - Third-Party Controls: getting-started/third-party-controls.md
+  - Configuration:
+    - Basic Settings: configuration/basic-settings.md
+    - Groups: configuration/groups.md
+    - Feature Info Options: configuration/featureinfo-options.md
+    - Other Settings: configuration/other-settings.md
+  - Controls:
+    - Overview: controls/index.md
+    - About: controls/about.md
+    - Bookmarks: controls/bookmarks.md
+    - Drag-and-Drop: controls/drag-and-drop.md
+    - Draw: controls/draw.md
+    - Editor: controls/editor.md
+    - External URL: controls/external-url.md
+    - Fullscreen: controls/fullscreen.md
+    - Geoposition: controls/geoposition.md
+    - Home: controls/home.md
+    - Legend: controls/legend.md
+    - Link: controls/link.md
+    - Localization: controls/localization.md
+    - Mapmenu: controls/mapmenu.md
+    - Measure: controls/measure.md
+    - Position: controls/position.md
+    - Print: controls/print.md
+    - Progressbar: controls/progressbar.md
+    - Scale: controls/scale.md
+    - Scalepicker: controls/scalepicker.md
+    - Search: controls/search.md
+    - Sharemap: controls/sharemap.md
+    - Splash: controls/splash.md
+  - Layers:
+    - Overview: layers/index.md
+    - GeoJSON: layers/geojson.md
+    - GPX: layers/gpx.md
+    - TopoJSON: layers/topojson.md
+    - WFS: layers/wfs.md
+    - AGS Feature: layers/ags-feature.md
+    - Vector Tile: layers/vectortile.md
+    - WMS: layers/wms.md
+    - WMTS: layers/wmts.md
+    - XYZ: layers/xyz.md
+    - AGS Map: layers/ags-map.md
+    - OSM: layers/osm.md
+    - Group: layers/group.md
+    - Source: layers/source.md
+    - Attributes: layers/attributes.md
+    - Attachments: layers/attachments.md
+    - Related Layers: layers/related-layers.md
+    - Style Picker: layers/style-picker.md
+  - Styles:
+    - Basics: styles/basics.md
+    - Shapes: styles/shapes.md
+    - Icon, Text & Image: styles/icon-text-image.md
+    - Filters & Scales: styles/filters-and-scales.md
+    - Examples: styles/examples.md
+  - API:
+    - Origo API: api/index.md
